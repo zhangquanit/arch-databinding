@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+
+        <variable
+            name="user"
+            type="com.andly.administrator.andlydatabinding.entry.User" />
+
+        <variable
+            name="handle"
+            type="com.andly.administrator.andlydatabinding.event_handing.EventHandler" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <!--
+            绑定事件的格式有两种：
+            1、方法引用：直接用handle.Click或者handle::Click  推荐后者
+        -->
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@{user.name}"
+            android:onClick="@{handle::Click}"/>
+
+    </LinearLayout>
+</layout>

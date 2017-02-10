@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+
+        <import type="android.databinding.ObservableMap" />
+
+        <import type="com.andly.administrator.andlydatabinding.dataObj.Fields" />
+
+        <variable
+            name="dataUser"
+            type="com.andly.administrator.andlydatabinding.dataObj.DataUser" />
+
+        <variable
+            name="context"
+            type="com.andly.administrator.andlydatabinding.dataObj.DataObjActivity" />
+
+        <variable
+            name="dataUser1"
+            type="com.andly.administrator.andlydatabinding.dataObj.DataUser1" />
+
+        <variable
+            name="obserableMap"
+            type="ObservableMap&lt;String,Object&gt;" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <!--
+            加了Bindable并且在set方法里面notifyPropertyChanged(BR.name);的字段可以更新，
+            否则不能更新
+        -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@{dataUser.name}" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text='@{dataUser.age+""}' />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@{dataUser.info}" />
+        </LinearLayout>
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="@{()->context.modify()}"
+            android:text="修改数据" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@{dataUser1.name}" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text='@{dataUser1.age+""}' />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@{dataUser1.info}" />
+        </LinearLayout>
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="@{()->context.modify2()}"
+            android:text="修改数据" />
+
+        <!--
+            绑定集合的数据
+        -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@{obserableMap[Fields.FIRST_NAME]}" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text='@{String.valueOf(obserableMap[Fields.AGE])}' />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@{obserableMap[Fields.LAST_NAME]}" />
+        </LinearLayout>
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="@{()->context.modify3()}"
+            android:text="修改绑定的集合" />
+
+        <!--
+            ID和视图,你在布局文件里面设置了ID它会自动在Binding类里面生成一个public final的字段
+            这个机制将会比findViewById更快
+        -->
+
+        <TextView
+            android:id="@+id/data1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="数据1" />
+
+        <TextView
+            android:id="@+id/data2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="数据2" />
+
+    </LinearLayout>
+</layout>

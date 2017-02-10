@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+
+        <variable
+            name="user"
+            type="com.andly.administrator.andlydatabinding.entry.User" />
+
+        <variable
+            name="handle"
+            type="com.andly.administrator.andlydatabinding.event_handing.EventHandler" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <!--
+            2、监听绑定：使用()组，括号里面所填的是你为参数起的名字，这样你就可以在后面的括号进行引用
+               如果你监听的事件需要返回值，那么你的方法也要返回一个相同类型
+        -->
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="@{()->handle.eventHandler(user)}"
+            android:text="传入布局文件中的数据" />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="@{(thisView)->handle.eventHandlerView(thisView,user)}"
+            android:text="传入此View" />
+        <!--如果你需要为一个点击事件设置一个断言，那么使用void作为一个标志,表示什么也不做-->
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="@{(v)->handle.isVisible(v)?handle.doSomething():void}"
+            android:text="判断是否为visible" />
+
+        <!--对于一些控件有自己专门的单击事件，需要创建下面的属性进行避免
+           SearchView    android:onSearchClick
+           ZoomControls  android:onZoomIn
+           ZoomControls  android:onZoomOut-->
+        <SearchView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="@{(v)->handle.searchClick(v)}"
+            android:onSearchClick="@{(v)->handle.onSearchClick(v)}">
+
+        </SearchView>
+
+        <!--当然你的设置的参数也可以是多个,注意的是在()-->
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onCheckedChanged="@{(thisView,isChecked)->handle.checkChanged(thisView,isChecked)}" />
+
+
+        <!--
+            如果你的对象为空，那么将默认返回，对于引用类型返回null，int类型返回0，Boolean返回false
+        -->
+        <TextView
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginTop="50dp"
+            android:background="#FF0000"
+            android:onLongClick="@{(thisView)->handle.longClick(thisView)}" />
+
+
+    </LinearLayout>
+</layout>

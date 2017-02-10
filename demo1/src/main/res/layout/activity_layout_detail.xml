@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:bind="http://schemas.android.com/apk/res-auto">
+
+    <!--这里你也可以为Binding类进行命名，有三种形式
+        1、Custom:会在databinding包下
+        2、.Custom:会在当前的包名下创建
+        3、com.andly.Custom:会在指定的包名下进行创建-->
+    <data>
+        <!--java.lang.*包是自动导入的不需要你再次的导入-->
+        <import type="android.view.View" />
+        <!--当出现了import相同的类名的时候需要为其指定外号alias加以区分-->
+        <import
+            alias="CustomView"
+            type="com.andly.administrator.andlydatabinding.myview.View" />
+
+        <import type="com.andly.administrator.andlydatabinding.entry.User" />
+
+        <import type="com.andly.administrator.andlydatabinding.event_handing.EventHandler" />
+
+        <import type="java.util.List" />
+
+        <import type="java.util.Map" />
+
+        <import type="android.graphics.drawable.Drawable" />
+
+        <variable
+            name="image"
+            type="Drawable" />
+
+        <variable
+            name="note"
+            type="String" />
+
+        <variable
+            name="boo"
+            type="boolean" />
+
+        <variable
+            name="view"
+            type="View" />
+        <!--这里不能用<>来表示泛型，要使用&lt; &gt;-->
+        <variable
+            name="list"
+            type="List&lt;User&gt;" />
+
+        <variable
+            name="strList"
+            type="List&lt;String&gt;" />
+
+        <variable
+            name="map"
+            type="Map&lt;String,String&gt;" />
+
+        <variable
+            name="intMap"
+            type="Map&lt;Integer,String&gt;" />
+
+        <variable
+            name="placeName"
+            type="String" />
+
+        <variable
+            name="PLACEHOLDER"
+            type="String" />
+
+
+        <variable
+            name="myView"
+            type="CustomView" />
+
+        <variable
+            name="user"
+            type="User" />
+
+        <variable
+            name="handle"
+            type="EventHandler" />
+
+
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@{placeName,default=PLACEHOLDER}"
+            android:textColor="#FF0000"
+            android:textSize="18sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@{note}"/>
+
+        <!--数据绑定将自动检测null异常，如果你的表达式为null，它将会给它赋值为(null)
+        如果为int类型则默认为0-->
+        <!--之前都是写三元运算符的形式，当然在数据绑定中也能够使用，但更推荐下面那种-->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@{boo?note:null}" />
+        <!--?? :null合并运算符，当左边为null会显示右边-->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@{note??null}"
+            android:textColor="#00FF00"
+            android:textSize="18sp" />
+
+
+        <!--使用Map这种Key Value的格式数据时
+                格式1："@{map['key']}"
+                格式2: '@{map["key"]}'
+                格式3: "@{map[`key`]}"  反引号
+        -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@{map[`one`]}" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text='@{String.valueOf(map[`one`])}'/>
+
+        <!--引用资源文件-->
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="@{boo?@dimen/large_padding:@dimen/small_padding}"
+            android:src="@{image}" />
+
+
+        <!--当你使用include的时候，你可以使用命名空间和属性中的变量名
+        来将数据传送到另一个布局中去,值得注意的是当include的父节点为merge时将不支持-->
+        <include
+            layout="@layout/detail_include"
+            bind:user="@{user}" />
+
+    </LinearLayout>
+</layout>
