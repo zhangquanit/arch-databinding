@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="user"
+            type="com.googlesample.databinding.entity.User"/>
+        <variable
+            name="presenter"
+            type="com.googlesample.databinding.MainActivity.Presenter"/>
+
+    </data>
+
+    <LinearLayout
+        android:id="@+id/activity_main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="com.googlesample.databinding.MainActivity"
+        android:orientation="vertical"
+        >
+
+        <EditText
+            android:id="@+id/first_Name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />
+        <EditText
+            android:id="@+id/last_Name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{user.firstName}"
+            android:onClick="@{presenter.onClick}"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="@{()->presenter.onClickListenerBinding(user)}"
+            android:text="@{user.lastName}" />
+    </LinearLayout>
+</layout>

@@ -1,0 +1,126 @@
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:bind="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <!-- import引入，同java import ,之后就可以直接使用-->
+        <import type="android.view.View" />
+
+        <import type="com.github.markzhai.sample.Employee" />
+
+        <variable
+            name="employee"
+            type="Employee" />
+
+        <variable
+            name="presenter"
+            type="com.github.markzhai.sample.SimpleActivity.Presenter" />
+    </data>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            tools:context=".SimpleActivity">
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="viewStub"
+                android:onClick="@{presenter.showViewStub}"
+                />
+            <ViewStub
+                android:id="@+id/view_stub"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout="@layout/viewstub" />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="输入 First Name"
+                android:onTextChanged="@{presenter::onTextChanged}" />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="输入 Last Name" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="@{presenter.onClick}"
+                android:text="@{employee.firstName}" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:onClick="@{() -> presenter.onClickListenerBinding(employee)}"
+                android:text="@{employee.lastName}" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:onClick="@{() -> presenter.onClickListenerBinding(employee)}"
+                android:text="@{String.valueOf(1 + 2)}"
+                android:visibility="@{employee.isFired ? View.GONE : View.VISIBLE}" />
+
+            <!--
+             map的使用
+             -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#6e0612" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:text='@{employee.user["key1"]}' />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:text='@{employee.user["key2"]}' />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:text='@{employee.user["key3"]}' />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#6e0612" />
+              <TextView
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                   android:text="@{employee.strList[0]}"
+                  />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#6e0612" />
+            <!--
+              1、 对于include的布局，需要在里面绑定两次，外面include该布局的layout使用bind:user给set进去。否则被include的layout里面无法使用
+               2、被include的布局必须顶层是一个ViewGroup
+            -->
+            <include
+                layout="@layout/include_demo"
+                bind:employee="@{employee}"
+                bind:presenter="@{presenter}"
+                />
+
+        </LinearLayout>
+    </ScrollView>
+</layout>

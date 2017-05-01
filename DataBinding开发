@@ -9,3 +9,205 @@ http://blog.csdn.net/weiwozhiyi/article/details/52181532
 
 MasteringAndroidDataBinding ->demo2
 http://blog.csdn.net/feelang/article/details/46348079
+
+ DataBinding学习笔记（一）源码分析
+http://blog.csdn.net/listen2code/article/details/53401461?ref=myread
+
+-----------------------------DataBinding
+Data Binding，顾名思义，数据绑定，是Google对MVVM在Android上的一种实现，可以直接绑定数据到xml中，并实现自动刷新。现在最新的版本还支持双向绑定，尽管使用场景不是那么多。
+Data Binding可以提升开发效率（节省很多以往需要手写的Java代码），性能高（甚至超越手写代码），功能强（强大的表达式支持）。
+用途：
+去掉Activities & Fragments内的大部分UI代码（setOnClickListener, setText, findViewById, etc.)
+XML变成UI的唯一真实来源
+减少定义view id的主要用途（数据绑定直接发生在xml）
+
+优势
+UI代码放到了xml中，布局和数据更紧密
+性能超过手写代码
+保证执行在主线程
+
+劣势
+IDE支持还不那么完善（提示、表达式）
+报错信息不那么直接
+重构支持不好（xml中进行重构，java代码不会自动修改）
+
+使用
+使用起来实在很简单，在app模块的build.gradle中加上几行代码就行了。
+android {
+    …
+    dataBinding {
+        enabled = true
+    }
+}
+把一个普通的layout变成data binding layout也只要几行的修改:
+<layout>
+    // 原来的layout
+</layout>
+在xml的最外层套上layout标签即可，修改后就可以看到生成了该布局对应的*Binding类。
+
+Binding生成规则
+默认生成规则：xml通过文件名生成，使用下划线分割大小写
+比如activity_demo.xml，则会生成ActivityDemoBinding，item_search_hotel则会生成ItemSearchHotelBinding。
+view的生成规则类似，只是由于是类变量，首字母不是大写，比如有一个TextView的id是first_name，则会生成名为firstName的TextView。
+我们也可以自定义生成的class名字，只需要：
+<data class=“ContactItem”>
+…
+</data>
+这样生成的类就会变成ContactItem。
+
+基础用法
+一、生成Binding实例
+ActivityMainBinding mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+二、去除findViewById
+使用了Data Binding后，我们再也不需要findViewById，因为一切有id的view，都已经在Binding类中被初始化完成了，只需要直接通过binding实例访问即可。
+
+三、变量绑定
+使用data标签，我们就可以在xml中申明变量，在其中使用该变量的field，并通过binding实例set进来。
+<data>
+    <variable
+        name="employee"
+        type="com.github.markzhai.databindingsample.Employee"/>
+</data>
+
+然后我们就可以在java代码中使用
+binding.setEmployee(employee);
+// 或者直接通过setVariable
+binding.setVariable(BR.employee, employee);
+
+四、事件绑定
+严格意义上来说，事件绑定也是一种变量绑定。我们可以在xml中直接绑定
+android:onClick
+android:onLongClick
+android:onTextChanged
+
+1、方法引用，方法签名需和对应listener方法一致。
+比如  public  void onClick(View v){
+
+}
+android:onClick="@{presenter.onClick}"
+2、监听器绑定（lambda）可以不遵循默认的方法签名
+public void onClickListenerBinding(User user){
+        Toast.makeText(MainActivity.this, "点击->"+user.firstName, Toast.LENGTH_SHORT).show();
+    }
+android:onClick="@{()->presenter.onClickListenerBinding(user)}"
+在xml中需要使用lambda表达式
+
+
+数据的刷新
+一、Model继承BaseObservable
+在字段或getXX方法上使用@Bindable注解，当数据改变时，调用notifyPropertyChanged(field)
+public class Employee extends BaseObservable {
+private String mLastName;
+@Bindable //在字段上使用@Bindable注解
+private String mFirstName;
+
+@Bindable  //在方法上使用@Bindable
+public String getLastName() {
+    return mLastName;
+}
+public void setLastName(String lastName) {
+    mLastName = lastName;
+    //通知数据改变  刷新UI
+    notifyPropertyChanged(com.github.markzhai.sample.BR.lastName);
+}
+public String getFirstName() {
+    return mFirstName;
+}
+public void setFirstName(String firstName) {
+    mFirstName = firstName;
+    notifyPropertyChanged(com.github.markzhai.sample.BR.firstName);
+}
+}
+注意：notifyChange();则会通知所有的属性刷新
+一旦调用setFirstName或者setLastName就会触发UI刷新
+
+二、调用binding.set(model)也会刷新model所有相关属性
+比如：binding.setUser(user); //更新数据
+三、Observable Fields
+Observable+(Byte、Short、Int、Long、Float、Double、Char、Boolean、ArrayList、ArrayMap、Parcelable)
+set或get方法
+比如
+public class Employee{
+private ObservableFloat salary=new ObservableFloat();
+
+public void setSalary(float money){
+ salary.set(money);
+}
+public float getSalary(){
+  return salary.get();
+}
+}
+
+
+自定义属性
+Setter
+就像Data Binding会自动去查找get方法一下，在遇到属性绑定的时候，它也会去自动寻找对应的set方法。
+<android.support.v4.widget.DrawerLayout
+    android:layout_width=“wrap_content”
+    android:layout_height=“wrap_content”
+    app:scrimColor=“@{@color/scrimColor}”/>
+如此，通过使用app命名空间，data binding就会去根据属性名字找对应的set方法，scrimColor -> setScrimColor:
+public void setScrimColor(@ColorInt int color) {
+    mScrimColor = color;
+    invalidate();
+}
+如果找不到的话，就会在编译期报错。
+BindingMethods
+
+BindingAdapter
+如果没有对应的set方法，或者方法签名不同怎么办？BindingAdapter注释可以帮我们来做这个。
+比如View的android:paddingLeft属性，是没有对应的直接进行设置的方法的，只有setPadding(left, top, right, bottom)
+这时候我们可以使用BindingAdapter定义一个静态方法:
+@BindingAdapter("android:paddingLeft")
+public static void setPaddingLeft(View view, int padding) {
+    view.setPadding(padding,
+                    view.getPaddingTop(),
+                    view.getPaddingRight(),
+                    view.getPaddingBottom());
+}
+关于方法参数：第一个参数为该属性所使用的view，后面的参数需要与绑定属性对应。
+在xml中使用:
+<View  android:paddingLeft=""/>
+事实上这个Adapter已经由Data Binding实现好了，可以在android.databinding.adapters.ViewBindingAdapter看到有很多定义好的适配器，还有BindingMethod。
+如果需要自己再写点什么，仿照这些来写就好了。
+我们还可以进行多属性绑定，比如：
+@BindingAdapter({"bind:imageUrl", "bind:error"})
+public static void loadImage(ImageView view, String url, Drawable error) {
+   Picasso.with(view.getContext()).load(url).error(error).into(view);
+}
+xml中使用bind:imageUrl,bind:error
+<ImageView
+bind:imageUrl=""
+bind:error=""
+ />
+
+
+
+原理
+BaseObservable implements Observable
+public abstract class ViewDataBinding extends BaseObservable
+其他Binding都继承于ViewDataBinding
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
